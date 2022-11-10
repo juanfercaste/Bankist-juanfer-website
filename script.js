@@ -1,6 +1,6 @@
 'use strict';
 
-///////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
 // Modal window
 const header = document.querySelector('.header');
 const modal = document.querySelector('.modal');
@@ -32,7 +32,9 @@ document.addEventListener('keydown', function (e) {
     closeModal();
   }
 });
+//////////////////////////////////////////////////////////////////////
 
+//////////////////////////////////////////////////////////////////////
 // scrolling
 btnScrollTo.addEventListener('click', function (e) {
   // const s1coords = section1.getBoundingClientRect();
@@ -51,9 +53,10 @@ btnScrollTo.addEventListener('click', function (e) {
   //modern browsers
   section1.scrollIntoView({ behavior: 'smooth' });
 });
+//////////////////////////////////////////////////////////////////////
 
+//////////////////////////////////////////////////////////////////////
 //page navegation
-
 // document.querySelectorAll('.nav__link').forEach(function (link) {
 //   link.addEventListener('click', function (e) {
 //     e.preventDefault();
@@ -63,7 +66,6 @@ btnScrollTo.addEventListener('click', function (e) {
 // });
 
 //event delegation for smooth navegation
-
 //1. add event tistener to common parent element
 //2. determint what element originated the event
 document.querySelector('.nav__links').addEventListener('click', function (e) {
@@ -75,7 +77,9 @@ document.querySelector('.nav__links').addEventListener('click', function (e) {
     document.querySelector(id).scrollIntoView({ behavior: 'smooth' });
   }
 });
+//////////////////////////////////////////////////////////////////////
 
+//////////////////////////////////////////////////////////////////////
 //tabbed component
 const tabs = document.querySelectorAll('.operations__tab');
 const tabsContainer = document.querySelector('.operations__tab-container');
@@ -100,9 +104,10 @@ tabsContainer.addEventListener('click', function (e) {
     .querySelector(`.operations__content--${clicked.dataset.tab}`)
     .classList.add('operations__content--active');
 });
+//////////////////////////////////////////////////////////////////////
 
+//////////////////////////////////////////////////////////////////////
 //menu fade animation
-
 //refactor
 const handlerHover = function (e) {
   if (e.target.classList.contains('nav__link')) {
@@ -132,7 +137,9 @@ window.addEventListener('scroll', function () {
   else nav.classList.remove('sticky');
 });
 */
+//////////////////////////////////////////////////////////////////////
 
+//////////////////////////////////////////////////////////////////////
 //sticky navigation with intersection obsrver API
 const navHeight = nav.getBoundingClientRect().height;
 const stickyNav = function (entries) {
@@ -147,7 +154,9 @@ const headerObserver = new IntersectionObserver(stickyNav, {
   rootMargin: `-${navHeight}px`,
 });
 headerObserver.observe(header);
+//////////////////////////////////////////////////////////////////////
 
+//////////////////////////////////////////////////////////////////////
 //revealing sections efeccts with intersaction ovserver API
 const allSections = document.querySelectorAll('.section');
 const revealSection = function (entries, observer) {
@@ -165,7 +174,9 @@ allSections.forEach(function (section) {
   sectionObserver.observe(section);
   section.classList.add('section--hidden');
 });
+//////////////////////////////////////////////////////////////////////
 
+//////////////////////////////////////////////////////////////////////
 // lazy loading images with intersaction ovserver API
 const imgTargets = document.querySelectorAll('img[data-src]');
 
@@ -185,6 +196,96 @@ const loadingImg = function (entries, observer) {
 const imgObserver = new IntersectionObserver(loadingImg, {
   root: null,
   threshold: 0,
+  rootMargin: '200px',
 });
 
 imgTargets.forEach(img => imgObserver.observe(img));
+//////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////
+//slider component
+const slider = function () {
+  const slides = document.querySelectorAll('.slide');
+  const btnLeft = document.querySelector('.slider__btn--left');
+  const btnRight = document.querySelector('.slider__btn--right');
+  const dotContainer = document.querySelector('.dots');
+  let curSlide = 0;
+  const maxSlides = slides.length;
+
+  //functions for slide component
+
+  //create dots for each slide
+  const createDots = function () {
+    slides.forEach(function (_, i) {
+      dotContainer.insertAdjacentHTML(
+        'beforeend',
+        `<butoon class="dots__dot" data-slide="${i}"></butoon>
+    `
+      );
+    });
+  };
+
+  //activate the special class that shows current slide
+  const activadeDot = function (slide) {
+    document
+      .querySelectorAll('.dots__dot')
+      .forEach(dot => dot.classList.remove('dots__dot--active'));
+
+    document
+      .querySelector(`.dots__dot[data-slide="${slide}"]`)
+      .classList.add('dots__dot--active');
+  };
+
+  //functios for next and previous slides
+  const goToSlide = function (slide) {
+    slides.forEach(
+      (s, i) => (s.style.transform = `translateX(${100 * (i - slide)}%)`)
+    );
+  };
+
+  const nextSlide = function () {
+    if (curSlide === maxSlides - 1) {
+      curSlide = 0;
+    } else {
+      curSlide++;
+    }
+    goToSlide(curSlide);
+    activadeDot(curSlide);
+  };
+
+  const prevSlide = function () {
+    if (curSlide !== 0) curSlide--;
+    goToSlide(curSlide);
+    activadeDot(curSlide);
+  };
+
+  // initial state of the web page
+  const init = function () {
+    goToSlide(0);
+    createDots();
+    activadeDot(0);
+  };
+
+  //calling initial function
+  init();
+
+  //set the events handlers
+  btnRight.addEventListener('click', nextSlide);
+  btnLeft.addEventListener('click', prevSlide);
+
+  document.addEventListener('keydown', function (e) {
+    console.log(e);
+    if (e.key === 'ArrowLeft') prevSlide();
+    if (e.key === 'ArrowRight') nextSlide();
+  });
+
+  dotContainer.addEventListener('click', function (e) {
+    if (e.target.classList.contains('dots__dot')) {
+      const { slide } = e.target.dataset;
+      goToSlide(slide);
+      activadeDot(slide);
+    }
+  });
+};
+slider();
+//////////////////////////////////////////////////////////////////////
